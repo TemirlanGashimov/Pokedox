@@ -24,8 +24,8 @@ header {
 
 .card {
   padding: 16px;
-  height: 250px;
-  width: 200px;
+  height: 200px;
+  width: 150px;
 }
 
 #content {
@@ -67,6 +67,15 @@ header {
   text-transform: capitalize;
 }
 
+.card-style-h3-p{
+    display: flex;
+    align-items: center;
+    justify-content:space-around ;
+}
+
+
+/* Pokemon Typ Farben */
+
 .type-fire {
     background: #ff7675;
 }
@@ -83,9 +92,65 @@ header {
     background: #ffeaa7;
 }
 
+.type-psychic {
+    background: #fd79a8;
+}
+
+.type-ice {
+    background: #81ecec;
+}
+
+.type-rock {
+    background: #dfe6e9;
+}
+
+.type-ground {
+    background: #fab1a0;
+}
+
+.type-poison {
+    background: #a29bfe;
+}
+
+.type-bug {
+    background: #badc58;
+}
+
 .type-normal {
     background: #dcdde1;
 }
+
+.type-flying {
+    background: #c7ecee;
+}
+
+.type-fighting {
+    background: #ff6b6b;
+}
+
+.type-dark {
+    background: #2d3436;
+    color: white;
+}
+
+.type-ghost {
+    background: #6c5ce7;
+    color: white;
+}
+
+.type-dragon {
+    background: #0984e3;
+    color: white;
+}
+
+.type-steel {
+    background: #b2bec3;
+}
+
+.type-fairy {
+    background: #fab1d0;
+}
+
 
 
 .types {
@@ -101,6 +166,44 @@ header {
     font-size: 12px;
     background: rgba(0,0,0,0.15);
 }
+
+#loadMoreBtn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    margin: 15px auto;
+    border: 4px solid #ddd;
+    border-top: 4px solid #ff5252;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#loadingWrapper {
+    text-align: center;
+    margin: 20px 0;
+}
+
+#loadingText {
+    margin-top: 10px;
+    font-size: 32px;
+    color: #555;
+}
+
+
 
 
 
