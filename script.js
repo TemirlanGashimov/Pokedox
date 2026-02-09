@@ -1,5 +1,5 @@
 async function fetchData() {  //Diese Funktion startet dein Programm , async bedeutet: „Hier drin benutze ich await“.
-    const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=20');  //Hier schicken wir eine Anfrage an die PokéAPI.
+    const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=20&offset=0');  //Hier schicken wir eine Anfrage an die PokéAPI.
                                                                                  // fetch holt Daten aus dem Internet.
                                                                                  // await heißt: „Warte, bis die Antwort da ist“.
                                                                                  // Ohne await wäre die Antwort noch leer.
@@ -29,7 +29,7 @@ async function renderPokemon(responseAsJson) {  // Diese Funktion baut die Karte
 
         const name = pokemon.name; //Wir speichern den Namen
         const url = pokemon.url; // Wir speichern die Dateil URL, In dieser URL sind Bilder Typ Status usw.
-        const types = pokemon.types;
+    
 
         // 👉 Details holen
         const detailResponse = await fetch(url);    //Wir rufen jetzt die Detail-URL auf.
@@ -43,14 +43,31 @@ async function renderPokemon(responseAsJson) {  // Diese Funktion baut die Karte
         const imageUrl =
             detailData.sprites.other["official-artwork"].front_default; //Das ist der wichtigste Teil, Hier holen wir den Bild-Link.
 
+        
+        const types = detailData.types;
+
+        const firstType = types[0].type.name;
+
+        let secondType = "";
+        if (types.lenght > 1) {
+            secondType = types[1].type.name
+        }
+
         // 👉 Anzeigen
         contentRef.innerHTML += `
-            <div>
-                <p>${name}</p>
+
+            <div class="card type-${firstType}">
+                <h3>${name}</h3>
                 <img src="${imageUrl}" width="150">
+
+                 <div class="types">
+                <span class="type">${firstType}</span>
+                ${secondType ? `<span class="type">${secondType}</span>` : ""}
+                </div>
+     
+
             </div>
         `;
     }
 }
-
 fetchData();
