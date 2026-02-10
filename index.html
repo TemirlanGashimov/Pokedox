@@ -1,41 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pokedox</title>
 
-    <link rel="stylesheet" href="styles/standard.css">
-    <link rel="stylesheet" href="style.css">
-    
-</head>
+    <link rel="stylesheet" href="styles/standard.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
+    <header>
+      <img class="logo" src="./assets/icon/pokemon_logo.png" alt="logo" />
+      <img class="pokemon-assets-logo" src="" alt="Pokedex" />
 
-<header>
- <img class="logo" src="./assets/icon/pokemon_logo.png" alt="logo">
- <img class="pokemon-assets-logo" src="" alt="Pokedex">
- 
- <div>
-<input id="pokemonName" type="text" placeholder="Pokemon Name"> 
-<button id="search" onclick="searchPokemon()">🔍</button>
-</div>
-</header>
+      <div>
+        <input id="pokemonName" type="text" placeholder="Pokemon Name" />
+        <p id="noResultText"> No Pokémon found </p>
+        <button id="search" onclick="searchPokemon()">🔍</button>
+      </div>
+    </header>
 
     <div id="content" class="content"></div>
-
-<button id="loadMoreBtn" onclick="loadMore()">Load ME</button>
-
-<div id="loadingWrapper" style="display:none;">
-    <div id="spinner" class="spinner"></div>
-    <p id="loadingText">Loading cards, please wait…</p>
+<div class="btn-position">
+    <button id="loadMoreBtn" onclick="loadMore()">Load ME</button>
 </div>
+    <div id="loadingWrapper" style="display: none">
+      <div id="spinner" class="spinner"></div>
+      <p id="loadingText">Loading cards, please wait…</p>
+    </div>
 
+    <dialog id="pokemonDialog">
+      <button onclick="closeDialog()">X</button>
+
+      <div id="dialogContent"></div>
+    </dialog>
 
     <footer></footer>
-    
-</body>
-
-<script src="script.js"></script>
-
+  </body>
+  <script src="./sripts/templates.js"></script>
+  <script src="script.js"></script>
 </html>
