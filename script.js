@@ -112,7 +112,7 @@ function searchPokemon() {
 
     const noResult = document.getElementById("noResultText");
 
-    noResult.style.display = "none";
+    noResult.classList.add("hidden");
 
     if (searchText.length <3) {
         isSearching = false;
@@ -132,7 +132,7 @@ function searchPokemon() {
 
     if (filtered.length === 0) {
         noResult.innerText = "No Pokémon found";
-        noResult.style.display = "block";
+        noResult.classList.remove("hidden");
     }
 
 renderPokemon({results: filtered});
