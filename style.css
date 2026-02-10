@@ -1,3 +1,8 @@
+.content {
+    max-width: 1440px;
+    margin: auto;
+}
+
 header {
   height: 200px;
   background-color: rgb(133, 29, 36);
@@ -204,9 +209,60 @@ header {
 }
 
 
+#pokemonDialog {
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    width: 350px;
+}
+
+#pokemonDialog::backdrop {
+    background: rgba(0,0,0,0.6);
+}
+
+
+
+.stat-row {
+    display: grid;
+    grid-template-columns: 60px 40px 1fr;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.stat-bar {
+    background: #eee;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.stat-bar-fill {
+    height: 100%;
+    background: #4caf50;
+}
+
+.total {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.dialog-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.dialog-nav button {
+    font-size: 20px;
+    padding: 5px 12px;
+    cursor: pointer;
+}
+
+
 
 
 
 footer {
-  height: 80px;
+  height: 160px;
 }
