@@ -27,6 +27,19 @@ header {
   flex-wrap: wrap;
 } */
 
+/* Verstecken */
+.hidden {
+  display: none;
+}
+
+/* Fehlermeldung rot */
+.error-text {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+
 .card {
   padding: 16px;
   height: 200px;
