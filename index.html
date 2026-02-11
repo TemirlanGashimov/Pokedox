@@ -12,31 +12,49 @@
   <body>
     <header>
       <img class="logo" src="./assets/icon/pokemon_logo.png" alt="logo" />
-      <img class="pokemon-assets-logo" src="" alt="Pokedex" />
 
-      <div>
-        <input id="pokemonName" type="text" placeholder="Pokemon Name" />
-        <p id="noResultText" class="hidden error-text"> No Pokémon found </p>
-        <button id="search" onclick="searchPokemon()">🔍</button>
+      <h1 class="text-logo">POKÉDEX</h1>
+      
+      <div class="search-container">
+        <div class="search-box">
+          <input id="pokemonName" type="text" placeholder="Search Pokémon..." oninput="searchPokemon()"/>
+
+          <button id="search" onclick="searchPokemon()">🔍</button>
+        </div>
+        <p id="noResultText" class="hidden error-text">No Pokémon found</p>
       </div>
     </header>
 
-    <div id="content" class="content"></div>
-<div class="btn-position">
-    <button id="loadMoreBtn" onclick="loadMore()">Load ME</button>
-</div>
-    <div id="loadingWrapper" class="hidden">
-      <div id="spinner" class="spinner"></div>
-      <p id="loadingText">Loading cards, please wait…</p>
-    </div>
+    <main>
+      <div id="content" class="content"></div>
+
+      <!-- BACK BUTTON -->
+      <div id="searchBackWrapper" class="hidden back-wrapper">
+        <button onclick="resetSearch()" class="back-search-btn">
+          Back to all Pokémon
+        </button>
+      </div>
+
+      <div class="btn-position">
+        <button id="loadMoreBtn" onclick="loadMore()">
+          Load next 25 Pokémon
+        </button>
+      </div>
+
+      <div id="loadingWrapper" class="hidden">
+        <div id="spinner" class="spinner"></div>
+        <p id="loadingText">Loading cards, please wait…</p>
+      </div>
+    </main>
 
     <dialog id="pokemonDialog">
-      <button onclick="closeDialog()">X</button>
-
       <div id="dialogContent"></div>
     </dialog>
 
-    <footer></footer>
+    <footer class="main-footer">
+      <p>© 2026 Pokédex Project</p>
+      <p>Created by <span>Temirlan G.</span></p>
+    </footer>
   </body>
   <script src="./scripts/templates.js"></script>
   <script src="script.js"></script>
