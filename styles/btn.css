@@ -1,0 +1,107 @@
+.tab-btn {
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+  font-size: 14px;
+
+  transition: 0.2s ease;
+}
+
+.tab-btn.active {
+  background: white;
+  color: black;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-position {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0 50px;
+}
+
+#loadMoreBtn {
+  background: linear-gradient(135deg, #ff7675, #fdcb6e);
+  border: none;
+  border-radius: 30px;
+
+  padding: 12px 28px;
+
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+  transition: all 0.2s ease;
+  border: 2px solid #ff7675;
+}
+
+#loadMoreBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  opacity: 0.95;
+}
+
+/* Klick Effekt */
+#loadMoreBtn:active {
+  transform: scale(0.97);
+}
+
+/* Disabled */
+#loadMoreBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #ccc;
+}
+
+#backBtn {
+  background: transparent;
+  border: 1px solid white;
+
+  color: white;
+
+  padding: 6px 12px;
+  border-radius: 20px;
+
+  cursor: pointer;
+
+  font-size: 13px;
+
+  transition: 0.2s ease;
+}
+
+#backBtn:hover {
+  background: white;
+  color: #2f3640;
+}
+
+.back-search-btn {
+  background: linear-gradient(135deg, #ff7675, #fdcb6e);
+
+  border: 2px solid #ff7675;
+  color: white;
+
+  padding: 10px 24px;
+  border-radius: 30px;
+
+  font-size: 15px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.back-search-btn:hover {
+  /* background: #ff7675; */
+  color: white;
+
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
