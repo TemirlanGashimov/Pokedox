@@ -1,0 +1,76 @@
+/* Dialog Header Farben */
+
+#pokemonDialog.type-fire .dialog-header {
+  background: #ff7675;
+}
+
+#pokemonDialog.type-water .dialog-header {
+  background: #74b9ff;
+}
+
+#pokemonDialog.type-grass .dialog-header {
+  background: #55efc4;
+}
+
+#pokemonDialog.type-electric .dialog-header {
+  background: #ffeaa7;
+}
+
+#pokemonDialog.type-psychic .dialog-header {
+  background: #fd79a8;
+}
+
+#pokemonDialog.type-ice .dialog-header {
+  background: #81ecec;
+}
+
+#pokemonDialog.type-rock .dialog-header {
+  background: #dfe6e9;
+}
+
+#pokemonDialog.type-ground .dialog-header {
+  background: #fab1a0;
+}
+
+#pokemonDialog.type-poison .dialog-header {
+  background: #a29bfe;
+}
+
+#pokemonDialog.type-bug .dialog-header {
+  background: #badc58;
+}
+
+#pokemonDialog.type-normal .dialog-header {
+  background: #dcdde1;
+}
+
+#pokemonDialog.type-flying .dialog-header {
+  background: #c7ecee;
+}
+
+#pokemonDialog.type-fighting .dialog-header {
+  background: #ff6b6b;
+}
+
+#pokemonDialog.type-dark .dialog-header {
+  background: #2d3436;
+  color: white;
+}
+
+#pokemonDialog.type-ghost .dialog-header {
+  background: #6c5ce7;
+  color: white;
+}
+
+#pokemonDialog.type-dragon .dialog-header {
+  background: #0984e3;
+  color: white;
+}
+
+#pokemonDialog.type-steel .dialog-header {
+  background: #b2bec3;
+}
+
+#pokemonDialog.type-fairy .dialog-header {
+  background: #fab1d0;
+}
