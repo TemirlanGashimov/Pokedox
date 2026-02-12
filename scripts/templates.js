@@ -1,14 +1,15 @@
 // ====// CARD TEMPLATE// ====
 
-function createPokemonCard({ id, name, imageUrl, types, url }) {
-  const firstType = types[0].type.name;
+function createPokemonCard({ id, name, imageUrl, types, url }) {  // Diese Funktion erstellt den HTML-Code für eine einzelne Pokémon-Karte
+  const firstType = types[0].type.name; // Wir holen den ersten Typ des Pokémon
 
-  let typeHtml = `<span class="type">${firstType}</span>`;
+  let typeHtml = `<span class="type">${firstType}</span>`; // Wir erstellen den HTML-Code für den ersten Typ
 
-  if (types.length > 1) {
-    typeHtml += `<span class="type">${types[1].type.name}</span>`;
+  if (types.length > 1) { // Prüfen: Hat das Pokémon einen zweiten Typ?
+    typeHtml += `<span class="type">${types[1].type.name}</span>`; // Wenn ja → zweiten Typ hinzufügen
   }
 
+  // Wir geben den fertigen HTML-Code zurück
   return `
         <div class="card type-${firstType}" onclick="openDialog('${url}')">
 
@@ -27,17 +28,18 @@ function createPokemonCard({ id, name, imageUrl, types, url }) {
     `;
 }
 
-function createStatsTemplate(stats) {
-  let total = 0;
-  let html = "";
+function createStatsTemplate(stats) {// Diese Funktion erstellt den HTML-Code für die Statistik-Anzeige eines Pokémon
 
-  stats.forEach(stat => {
-    const value = stat.base_stat;
-    const name = stat.stat.name.toUpperCase();
+  let total = 0; // Hier speichern wir die Summe aller Werte (Total)
+  let html = ""; // In dieser Variable sammeln wir den HTML-Code
 
-    total += value;
+  stats.forEach(stat => { // Wir gehen durch alle Stats des Pokémon
+    const value = stat.base_stat; // Basis-Wert des jeweiligen Stats holen
+    const name = stat.stat.name.toUpperCase(); // Namen des Stats holen und groß schreiben
 
-    const barWidth = (value / 200) * 100;
+    total += value; // Wert zur Gesamt-Summe addieren
+
+    const barWidth = (value / 200) * 100; // Breite für den Balken berechnen (in Prozent) 200 = angenommener Max-WertBeispiel: 100 / 200 * 100 = 50%
 
     html += `
       <div class="stat-row">
@@ -53,24 +55,28 @@ function createStatsTemplate(stats) {
     `;
   });
 
+  // Nach allen Stats fügen wir die Gesamt-Summe hinzu
   html += `
     <div class="stat-row total">
       <span class="stat-name">TOTAL</span>
       <span class="stat-value">${total}</span>
     </div>
   `;
-
+// Fertigen HTML-Code zurückgeben
   return html;
 }
 
 // ====// DIALOG TEMPLATE// ====
 
-function createPokemonDialog(data, speciesData, statsHtml) {
+function createPokemonDialog(data, speciesData, statsHtml) { // Diese Funktion erstellt den kompletten HTML-Code für das Pokémon-Dialogfenster
 
+  // Wir bauen die Typ-Badges (fire, water, etc.)
+  // und fassen sie zu einem HTML-String zusammen
   const typeBadges = data.types
     .map(t => `<span class="type">${t.type.name}</span>`)
     .join("");
 
+    // Wir geben den fertigen Dialog als HTML-String zurück
   return `
 
 <div class="dialog-header"> 
