@@ -4,30 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pokedox</title>
-    
-    <link rel="stylesheet" href="styles/search.css">
-    <link rel="stylesheet" href="styles/pokemon-typ-color.css">
-    <link rel="stylesheet" href="styles/btn.css">
-    <link rel="stylesheet" href="styles/logo-pokedex.css">
-    <link rel="stylesheet" href="styles/dialog-color.css">
-    <link rel="stylesheet" href="styles/dialog.css">
+    <link rel="icon" type="image/png" href="./assets/icon/pokemon_logo.png" />
+
+    <link rel="stylesheet" href="styles/search.css" />
+    <link rel="stylesheet" href="styles/pokemon-typ-color.css" />
+    <link rel="stylesheet" href="styles/btn.css" />
+    <link rel="stylesheet" href="styles/logo-pokedex.css" />
+    <link rel="stylesheet" href="styles/dialog-color.css" />
+    <link rel="stylesheet" href="styles/dialog.css" />
     <link rel="stylesheet" href="styles/standard.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
     <header>
-      <img class="logo" src="./assets/icon/pokemon_logo.png" alt="logo" />
+      <div class="header-container">
+        <img class="logo" src="./assets/icon/pokemon_logo.png" alt="logo" />
 
-      <h1 class="text-logo">POKÉDEX</h1>
-      
-      <div class="search-container">
-        <div class="search-box">
-          <input id="pokemonName" type="text" placeholder="Search Pokémon..." oninput="searchPokemon()"/>
+        <h1 class="text-logo">POKÉDEX</h1>
 
-          <button id="search" onclick="searchPokemon()">🔍</button>
+        <div class="search-container">
+          <div class="search-box">
+            <input
+              id="pokemonName"
+              type="text"
+              placeholder="Search Pokémon..."
+              oninput="searchPokemon()"
+            />
+
+            <button id="search" onclick="searchPokemon()">🔍</button>
+          </div>
+          <p id="noResultText" class="hidden error-text">No Pokémon found</p>
         </div>
-        <p id="noResultText" class="hidden error-text">No Pokémon found</p>
       </div>
     </header>
 
