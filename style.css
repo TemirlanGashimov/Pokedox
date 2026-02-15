@@ -9,16 +9,22 @@
 
 /* ================= HEADER ================= */
 header {
-  height: 120px;
   background: linear-gradient(135deg, #1e272e, #2f3640);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-bottom: 3px solid #ff7675;
+  padding: 0 40px 0 40px;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  max-width: 1440px;
+  height: 120px;
+  width: 100%;
+  margin:  0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  top: 0;
-  z-index: 1000;
-  border-bottom: 3px solid #ff7675;
 }
 
 .logo {
@@ -324,211 +330,114 @@ header div {
   cursor: default;
 }
 
-
 /* ================= RESPONSIVE BREAKPOINTS ================= */
-                /* Mobile First: 320px Basis */
 
-    @media (max-width: 320px) {
-
-  header {
-    flex-direction: column;
-    padding: 10px 6px;
-    gap: 6px;
+@media (max-width: 680px) {
+  .logo {
+    width: 60px;
+    height: 60px;
   }
 
   .text-logo {
-    font-size: 17px;
-    letter-spacing: 1px;
+    font-size: 38px;
   }
 
-  .logo {
-    width: 42px;
-    height: 42px;
-  }
-  
-  #pokemonName {
-    width: 120px;
+  #pokemonName{
+    width: 100px;
   }
 
-  #pokemonName:focus {
-    width: 160px;
-  }
-
-  /* Cards → 2 pro Reihe */
   #content {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .card {
-    min-height: 145px;
-    padding: 6px;
-    height: 150px;
-    width: 125px;
-  }
-
-  .card img {
-    height: 85px;
-  }
-
-  .card h3 {
-    font-size: 12px;
-  }
-
-  .type {
-    font-size: 10px;
-    padding: 2px 6px;
-  }
-
-  /* Buttons */
-  #loadMoreBtn,
-  .back-search-btn {
-    width: 95%;
-    font-size: 12px;
+    width: 146px;
   }
 }
 
-/* ========== 375px (Standard Phones) ========== */
-@media (min-width: 321px) and (max-width: 375px) {
-
-  header {
-    flex-direction: column;
-    padding: 14px 12px;
-    gap: 6px;
-  }
-
+@media (max-width: 630px){
   .logo{
     width: 50px;
     height: 50px;
   }
 
   .text-logo {
-    font-size: 20px;
+    font-size: 34px;
   }
 
-   #pokemonName {
+  .card {
+    width: 125px;
+  }
+}
+
+@media (max-width: 551px){
+   #content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .card {
     width: 120px;
   }
+}
 
-  #pokemonName:focus {
-    width: 160px;
+@media (max-width: 535px) {
+
+    #content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  /* Grid */
-  #content {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 10px;
-  }
-
-  /* Karten */
   .card {
-    min-height: 165px;
-    padding: 10px;
+    width: 114px;
+  }
+}
+
+@media (max-width: 500px){
+.text-logo {
+  font-size: 30px;
+}
+}
+
+@media (max-width: 490px){
+  .header-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
   }
 
-  .card img {
-    height: 100px;
+  header div {
+    gap: 3px;
+  }
+
+  .logo{
+    width: 36px;
+    height: 36px;
+  }
+
+  .text-logo{
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 320px){
+
+ #content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .card {
+    width: 90px;
   }
 
   .card h3 {
-    font-size: 13px;
-  }
-
-  .type {
-    font-size: 11px;
-    padding: 3px 6px;
-  }
-
-  /* Buttons */
-  #loadMoreBtn,
-  .back-search-btn {
-    width: 90%;
-    max-width: 300px;
     font-size: 14px;
   }
-}
 
-
-/* ========== 425px (Große Phones) ========== */
-@media (min-width: 376px) and (max-width: 425px) {
-
-  header {
-    flex-direction: column;
-    padding: 14px 12px;
-  }
-
-.logo {
-    width: 58px;
-    height: 58px;
-}
-
-  .text-logo {
-    font-size: 22px;
-  }
-
-  #content {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .card img {
-    height: 115px;
-  }
-}
-
-
-/* ========== 768px (Tablets) ========== */
-@media (min-width: 426px) and (max-width: 768px) {
-
-  header {
-    padding: 15px 20px;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-
-  .text-logo {
-    font-size: 26px;
-  }
-
-  #content {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-
-  .card {
-    min-height: 190px;
-  }
-
-  .card img {
-    height: 125px;
-  }
-}
-
-
-/* ========== 1024px (Laptop) ========== */
-@media (min-width: 769px) and (max-width: 1024px) {
-
-  .text-logo {
-    font-size: 32px;
-  }
-
-  #content {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-  }
-
-  .card img {
-    height: 135px;
-  }
-}
-
-
-/* ========== 1025px+ (Desktop) ========== */
-@media (min-width: 1025px) {
-
-  #content {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  }
 }
