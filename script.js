@@ -1,453 +1,486 @@
-// Speichert ALLE Pokémon aus der API (nur Name + URL)
-// Wird einmal beim Start gefüllt und dann immer wieder benutzt
-let allPokemon = [];
+let allPokemon = [];            // Speichert ALLE Pokémon aus der API (nur Name + URL)
+                                // Wird einmal beim Start gefüllt und dann immer wieder benutzt
 
-// Zeigt, ab welchem Pokémon wir gerade anzeigen
-// Beispiel: 0 = erstes Pokémon
-// 25 = zweiter Block
-let startIndex = 0;
+let startIndex = 0;             // Zeigt, ab welchem Pokémon wir gerade anzeigen
+                                // Beispiel: 0 = erstes Pokémon
+                                // 25 = zweiter Block
 
-// true = User sucht gerade
-// false = normale Ansicht
-let isSearching = false;
+let isSearching = false;        // true = User sucht gerade
+                                // false = normale Ansicht
 
-// true = gerade am Laden → verhindert mehrfaches Klicken
-let isLoading = false;
 
-// Speicher für Detaildaten (Cache)
-// Vorteil: Weniger Internet → schneller
-let pokemonDetailsCache = {};
+let isLoading = false;          // true = gerade am Laden → verhindert mehrfaches Klicken
 
-// Welches Pokémon ist im Dialog gerade offen?
-// Wird für Links/Rechts Navigation benutzt
-let currentPokemonIndex = 0;
 
-// Merkt sich die Scroll-Position der Seite
-// Damit wir nach dem Dialog wieder dorthin springen
-let lastScrollPosition = 0;
+let pokemonDetailsCache = {};   // Speicher für Detaildaten (Cache)
+                                // Vorteil: Weniger Internet → schneller
 
-async function fetchData() {
-//Diese Funktion startet dein Programm , async bedeutet: „Hier drin benutze ich await“.
 
-// Startzustand: keine Suche aktiv
-  isSearching = false;
+let currentPokemonIndex = 0;    // Welches Pokémon ist im Dialog gerade offen?
+                                // Wird für Links/Rechts Navigation benutzt
+
+
+let lastScrollPosition = 0;      // Merkt sich die Scroll-Position der Seite
+                                 // Damit wir nach dem Dialog wieder dorthin springen
+
+
+
+async function fetchData() {                               //Diese Funktion startet dein Programm , async bedeutet: „Hier drin benutze ich await“.
+  
+                                                            // Startzustand: keine Suche aktiv
+
+  isSearching = false;                                      // Sicherstellen: Suche aus
   updateBackButton();
 
   const response = await fetch(
     "https://pokeapi.co/api/v2/pokemon?limit=1000&offset=0",
-  ); //Hier schicken wir eine Anfrage an die PokéAPI.
-  // fetch holt Daten aus dem Internet.
-  // await heißt: „Warte, bis die Antwort da ist“.
-  // Ohne await wäre die Antwort noch leer.
+  );                                                                    //Hier schicken wir eine Anfrage an die PokéAPI.
+                                                                        // fetch holt Daten aus dem Internet.
+                                                                        // await heißt: „Warte, bis die Antwort da ist“.
+                                                                        // Ohne await wäre die Antwort noch leer.
 
-  const responseAsJson = await response.json(); //Die Antwort kommt als Text.
-  //json() wandelt sie in ein JavaScript-Objekt um.
-  //Jetzt können wir damit arbeiten.
+  const responseAsJson = await response.json();                         //Die Antwort kommt als Text.
+                                                                        //json() wandelt sie in ein JavaScript-Objekt um.
+                                                                        //Jetzt können wir damit arbeiten.
 
-  allPokemon = responseAsJson.results;
-   // Wir speichern nur die results-Liste
-  // Dort stehen Name + URL
+  allPokemon = responseAsJson.results;                                  // Wir speichern nur die results-Liste Dort stehen Name + URL
 
-  renderPokemon(responseAsJson); // Erste Karten anzeigen
-
-  isSearching = false; // Sicherstellen: Suche aus
-  updateBackButton();
+  renderPokemon(responseAsJson);                                        // Erste Karten anzeigen
 }
 
-async function renderPokemon(responseAsJson, append = false) {
-  // Diese Funktion baut die Karten.
-  //Sie ist auch async, weil wir darin nochmal fetch benutzen.
+function renderSinglePokemon(pokemon, detailData) {                     // Diese Funktion erstellt eine einzelne Pokémon-Karte
+                                                                        // und fügt sie in den HTML-Container ein.
+                                                                        // Sie kombiniert Basisdaten (Name, URL)
+                                                                        // mit Detaildaten (Bild, Typen, Infos).
 
-  updateBackButton();
+  const content = document.getElementById("content");                   // Holt das HTML-Element,
+                                                                        // in dem alle Pokémon-Karten angezeigt werden
 
-  const contentRef = document.getElementById("content"); //Wir holen uns das <div id="content"> aus dem HTML.
-  //Dort kommen alle Pokémon rein.
+  const id = pokemon.url.split("/")[6];                                 // Extrahiert die Pokémon-ID aus der API-URL
+                                                                        // Beispiel:
+                                                                        // "https://pokeapi.co/api/v2/pokemon/25/"
+                                                                        // → ["https:", "", "pokeapi.co", "api", "v2", "pokemon", "25", ""]
+                                                                        // → Index 6 = "25"
 
-// Wenn append = false:
-  // → Alte Karten löschen
-  // → Neu anfangen
-  if (!append) { 
-    contentRef.innerHTML = ""; 
-  } 
+  const imageUrl =
+    detailData.sprites.other["official-artwork"].front_default;          // Holt das offizielle Pokémon-Bild
+                                                                         // aus den verschachtelten API-Daten
 
-  let end = startIndex + 25; // Endindex berechnen (25 pro Seite)
+  const types = detailData.types;                                        // Holt alle Typen des Pokémon (z.B. fire, water)
+                                                                         // Wird später für Farben und Labels benutzt
 
-  if (end > responseAsJson.results.length) { // Falls wir am Ende sind → begrenzen
-    end = responseAsJson.results.length;
+  content.innerHTML += createPokemonCard({                               //nimmt die daten aus dem templates.js
+    id,                                                                  // Pokémon-Nummer
+    name: pokemon.name,                                                  // Pokémon-Name
+    imageUrl,                                                            // Bild-URL
+    types,                                                               // Typen-Liste
+    url: pokemon.url,                                                    // API-Link für Details
+  });
+}
+
+async function getPokemonDetails(url) {               // Prüft zuerst, ob die Detaildaten dieses Pokémon
+                                                      // bereits im Cache gespeichert wurden
+                                                      // → Wenn ja, sparen wir einen neuen API-Aufruf
+
+  if (pokemonDetailsCache[url]) {
+    return pokemonDetailsCache[url];                  // Gibt gespeicherte Daten zurück
   }
 
-  for (let i = startIndex; i < end; i++) { // Schleife über aktuelle Seite
-    const pokemon = responseAsJson.results[i];  // Einzelnes Pokémon aus der Liste
+  const response = await fetch(url);                  // Falls noch nicht im Cache:
+                                                      // Neue Anfrage an die API senden
 
-    const name = pokemon.name; // Name holen
-    const url = pokemon.url; // Wir speichern die Dateil URL, In dieser URL sind Bilder Typ Status usw. // API-URL holen
-    const id = url.split("/")[6]; // ID aus URL extrahieren
+  const data = await response.json();                 // Antwort in ein JavaScript-Objekt umwandeln
 
-    let detailData;
+  pokemonDetailsCache[url] = data;                    // Die geladenen Daten im Cache speichern,
+                                                      // damit sie beim nächsten Mal sofort verfügbar sind
 
-    if (pokemonDetailsCache[url]) { // Prüfen: Gibt es die Daten schon im Cache?
-      // Daten sind schon da → aus dem Speicher holen
-      detailData = pokemonDetailsCache[url]; // Ja → aus Speicher holen
-    } else {
-      // Noch nicht da → aus dem Internet laden
-      const detailResponse = await fetch(url); // Nein → aus API laden
-      detailData = await detailResponse.json();
+  return data;                                        // Daten an den Aufrufer zurückgeben
+}
 
-      // Im Cache speichern
-      pokemonDetailsCache[url] = detailData;
-    }
+function clearContent(append) {
+  const content = document.getElementById("content"); // Holt das Haupt-Container-Element,
+                                                      // in dem alle Pokémon-Karten stehen
 
-    // Bild aus der API holen
-    const imageUrl = detailData.sprites.other["official-artwork"].front_default; //Das ist der wichtigste Teil, Hier holen wir den Bild-Link. // Offizielles Artwork holen
+  if (!append) {                                      // Wenn append = false ist,
+                                                      // sollen alte Karten gelöscht werden
 
-    const types = detailData.types; // Pokémon-Typen
+    content.innerHTML = "";                           // Container leeren
+  }
+                                                      // Wenn append = true ist,
+                                                      // bleibt der Inhalt erhalten
+}
 
-    contentRef.innerHTML += createPokemonCard({ // Karte erstellen und einfügen
-      id,
-      name,
-      imageUrl,
-      types,
-      url,
-    });
+async function renderPokemon(responseAsJson, append = false) {                // Diese Funktion zeigt Pokémon als Karten auf der Webseite an.
+                                                                              // Sie lädt immer maximal 25 Pokémon auf einmal.
+                                                                              // append = false → Alte Karten löschen (neue Ansicht)
+                                                                              // append = true  → Neue Karten anhängen (Load More)
+
+
+  clearContent(append);                                                       // Löscht alte Karten, falls append = false ist
+
+  let end = Math.min(startIndex + 25, responseAsJson.results.length);         // Berechnet, bis zu welchem Index angezeigt werden soll
+                                                                              // startIndex + 25 → maximal 25 Pokémon pro Seite
+                                                                              // Math.min → verhindert, dass wir über das Array-Ende gehen
+
+  for (let i = startIndex; i < end; i++) {                                    // Schleife über den aktuellen Bereich der Pokémon-Liste
+                                                                              // → Pagination (Seitenweises Laden)
+
+    const pokemon = responseAsJson.results[i];                                // Holt das aktuelle Pokémon aus der Ergebnisliste
+
+    const detailData = await getPokemonDetails(pokemon.url);                  // Lädt die Detaildaten dieses Pokémon (Bild, Typ, Stats)
+                                                                              // Nutzt dabei den Cache, falls vorhanden
+
+    renderSinglePokemon(pokemon, detailData);                                  // Erstellt eine Karte für dieses Pokémon
+                                                                              // und fügt sie ins HTML ein
   }
 }
+
 fetchData(); // Beim Start automatisch laden
 
-function searchPokemon() {
-  const input = document.getElementById("pokemonName"); // Wir holen uns das Input-Feld aus dem HTML,
-                                                        // in das der User den Pokémon-Namen eintippt.
+function getSearchText() {
+  const input = document.getElementById("pokemonName");       // Holt das Suchfeld aus dem HTML
 
-  const searchText = input.value.toLowerCase().trim();  // Hier holen wir den Text aus dem Input-Feld.
-                                                        // input.value = das, was der User eingegeben hat.
-    // Danach machen wir zwei wichtige Sachen:  // 1) toLowerCase() //    → Macht alle Buchstaben klein,    //damit "Pika", "PIKA" und "pika" gleich behandelt werden. //  // 2) trim()
-  //    → Entfernt Leerzeichen am Anfang und Ende,
+  return input.value.toLowerCase().trim();                    // Gibt den Text zurück:
+                                                              // - klein geschrieben (toLowerCase)
+                                                              // - ohne Leerzeichen am Rand (trim)
+}
 
-
-  const noResult = document.getElementById("noResultText"); // Wir holen uns das HTML-Element,
-                                                            // das angezeigt wird, wenn keine Pokémon gefunden wurden.
-                                                            // Beispiel: "No Pokémon found"
-  noResult.classList.add("hidden");
-  // Am Anfang verstecken wir diese Meldung immer.
-  // Grund:
-  // Vielleicht gibt es diesmal ein Ergebnis,
-  // dann soll die alte Fehlermeldung nicht mehr sichtbar sein
-
-  // Wenn zu kurz → normale Liste
-  if (searchText.length < 3) { // Jetzt prüfen wir: // Hat der User weniger als 3 Zeichen eingegeben? // Unter 3 Zeichen starten wir keine Suche,
-                                // damit die App nicht unnötig rechnet
-                                // und die Ergebnisse nicht chaotisch werden.
-
-    isSearching = false;    // Wir sagen dem Programm:
-                            // "Wir sind NICHT im Suchmodus"
-
-    startIndex = 0; // Wir setzen den Startpunkt der Liste wieder auf 0,
-                    // damit wir wieder beim ersten Pokémon anfangen.
-
-    renderPokemon({ results: allPokemon }); // Wir zeigen wieder ALLE Pokémon an,
-                                            // weil keine echte Suche aktiv ist.
-
-    checkLoadMore();    // Wir prüfen, ob der "Load More"-Button
-                        // sichtbar sein soll oder nicht.
-
-    updateBackButton(); // Wir aktualisieren den Zurück-Button,
-                        // damit er korrekt ein- oder ausgeblendet wird.
-
-
-    return;     // Hier beenden wir die Funktion sofort.
-                // Alles darunter wird NICHT mehr ausgeführt.
-                // Ohne return würde der Such-Code unten trotzdem laufen
-                // und Fehler verursachen.
-  }
-
-  // Suche aktiv
-  isSearching = true;
+function resetSearchView() {                                  // Setzt die Ansicht nach einer Suche
+                                                              // wieder in den Standard-Zustand zurück
+                                                              // → Alle Pokémon anzeigen
+                                                              // → Suche deaktivieren
+  isSearching = false;
   startIndex = 0;
 
-  const filtered = allPokemon.filter((pokemon) => // Pokémon filtern // filter() geht durch jedes Pokémon in allPokemon 
-                                                   // und prüft, ob es zum Suchtext passt. // Nur passende Pokémon bleiben im neuen Array "filtered".
-    
-     
-    pokemon.name.toLowerCase().includes(searchText),    // 1) Name klein machen
-                                                        // 2) Prüfen, ob der Suchtext enthalten ist
-  );
-
-  if (filtered.length === 0) {          // Jetzt prüfen wir:
-                                        // Haben wir GAR kein passendes Pokémon gefunden?
-
-    noResult.classList.remove("hidden");    // "Keine Ergebnisse gefunden"
-  }
-
-  renderPokemon({ results: filtered });     // Jetzt zeigen wir die gefilterten Pokémon an,
-                                            // also nur die, die zur Suche passen.
+  renderPokemon({ results: allPokemon });
   checkLoadMore();
   updateBackButton();
+}
+
+function filterPokemon(searchText) {                            // Durchsucht alle Pokémon nach Namen,
+                                                                // die den Suchtext enthalten
+
+  return allPokemon.filter(pokemon =>
+    pokemon.name.toLowerCase().includes(searchText)             // Prüft bei jedem Pokémon:
+                                                                // Kommt der Suchtext im Namen vor?
+  );
+}
+
+function showSearchResults(filtered) {
+  const noResult = document.getElementById("noResultText");     // Holt den Text für "Kein Ergebnis"
+
+  if (filtered.length === 0) {                                  // Wenn keine Treffer vorhanden sind
+    noResult.classList.remove("hidden");                        // Zeigt die "Kein Ergebnis"-Meldung
+  } else {
+    noResult.classList.add("hidden");                           // Versteckt die Meldung wieder
+  }
+
+  renderPokemon({ results: filtered });                          // Zeigt die gefilterten Pokémon an
+  checkLoadMore();                                               // Aktualisiert den Load-Button
+  updateBackButton();                                            // Aktualisiert den Zurück-Button
+}
+
+function searchPokemon() {
+
+  const searchText = getSearchText();                             // Holt den aktuellen Suchtext
+
+  if (searchText.length < 3) {                                    // Wenn weniger als 3 Buchstaben eingegeben wurden
+
+    resetSearchView();                                            // Suche abbrechen und normale Ansicht zeigen
+    return;                                                       // Funktion beenden
+  }
+
+  isSearching = true;                                             // Suchmodus aktivieren
+  startIndex = 0;                                                 // Liste wieder von vorne starten
+
+  const filtered = filterPokemon(searchText);                     // Pokémon filtern
+
+  showSearchResults(filtered);                                    // Gefilterte Ergebnisse anzeigen
 }
 
 async function loadMore() {
-    
-    // Diese Funktion wird aufgerufen,
-  // wenn der User auf den "Load More"-Button klickt.
-  // async bedeutet:
-  // → Wir benutzen hier await
-  // → Die Funktion arbeitet mit asynchronen Vorgängen (z.B. API, sleep)
+                                                                  // Diese Funktion wird aufgerufen, 
+                                                                  // // wenn der User auf den "Load More"-Button klickt.
+                                                                  // async bedeutet:// → Wir benutzen hier await
+                                                                  // → Die Funktion arbeitet mit asynchronen Vorgängen (z.B. API, sleep)
 
-  if (isLoading) return; // Wenn schon geladen wird → abbrechen
-                        // Verhindert Bug durch Spam-Klick
+  if (isLoading) return;                                            // Wenn schon geladen wird → abbrechen
+                                                                    // Verhindert Bug durch Spam-Klick
 
-  isLoading = true; // → Wir sind gerade am Laden. // → Weitere Klicks sollen ignoriert werden.
+  isLoading = true;                                                 // → Wir sind gerade am Laden. // → Weitere Klicks sollen ignoriert werden.
 
-  const btn = document.getElementById("loadMoreBtn"); // Wir holen den "Load More"-Button aus dem HTML.
+  const btn = document.getElementById("loadMoreBtn");               // Wir holen den "Load More"-Button aus dem HTML.
+
   const loadingWrapper = document.getElementById("loadingWrapper"); // Wir holen den Wrapper, der den Spinner enthält.
                                                                     // (Also die Ladeanimation)
 
-  // Button sperren // disabled = true bedeutet:
-  btn.disabled = true;
-
-  btn.innerText = "Loading..."; // ändern text im Button, es passiert gerade was (Loading es Lädt....)
-
-  loadingWrapper.classList.remove("hidden");
-    //Spinner anzeigen
-    //Die Klasse "hidden" versteckt das Element.
-  // remove("hidden") macht es sichtbar.
-  // Jetzt sieht der User eine Ladeanimation.
-
   
-  await sleep(1000); // Mini-Wartezeit 1sek (UX)
+  btn.disabled = true;                                            // Button sperren // disabled = true bedeutet:
 
-  startIndex += 25; // Wir gehen 25 weiter
-                    // Nächste Pokémon
+  btn.innerText = "Loading...";                                   // ändern text im Button, es passiert gerade was (Loading es Lädt....)
 
-  await renderPokemon({ results: allPokemon }, true);
-  // Wir rufen renderPokemon erneut auf.
-  // Das zweite Argument = true das bedeutet: Nicht alles löschen Sondern neue Karten anhängen
-  // append = true
+  loadingWrapper.classList.remove("hidden");                      //Spinner anzeigen
+                                                                  //Die Klasse "hidden" versteckt das Element.
+                                                                  // remove("hidden") macht es sichtbar.
+                                                                  // Jetzt sieht der User eine Ladeanimation.
 
-  
-  isLoading = false; // Reset und Der Button darf wieder benutzt werden.
+  await sleep(1000);                                              // Mini-Wartezeit 1sek (UX)
 
-  btn.disabled = false; // button wieder aktiv 
-  btn.innerText = "Next 25 Pokémon "; // text zurücksetzen 
-  loadingWrapper.classList.add("hidden"); //spinner wieder verstecken 
+  startIndex += 25;                                               // Erhöht den Startindex um 25,
+                                                                  // damit beim nächsten Rendern die nächsten Pokémon geladen werden
+
+  await renderPokemon({ results: allPokemon }, true);             // Wir rufen renderPokemon erneut auf.
+                                                                  // Das zweite Argument = true das bedeutet: 
+                                                                  // Nicht alles löschen Sondern neue Karten anhängen
+                                                                  // append = true
+
+  isLoading = false;                                              // Reset und Der Button darf wieder benutzt werden.
+
+  btn.disabled = false;                                           // button wieder aktiv
+  btn.innerText = "Next 25 Pokémon ";                             // text zurücksetzen
+  loadingWrapper.classList.add("hidden");                         // spinner wieder verstecken
 
   checkLoadMore();
   updateBackButton();
 }
 
-function sleep(ms) { // Diese Funktion erstellt eine künstliche Pause für async/await Funktionen. ms = Millisekunden (1000 = 1 Sekunde)
-  return new Promise((resolve) => setTimeout(resolve, ms));// setTimeout wartet ms Millisekunden Danach wird resolve() aufgerufen
+function sleep(ms) {                                              // Diese Funktion erstellt eine künstliche Pause für 
+                                                                  // async/await Funktionen. ms = Millisekunden (1000 = 1 Sekunde)
+  
+  return new Promise((resolve) => setTimeout(resolve, ms));       // setTimeout wartet ms Millisekunden Danach wird resolve() aufgerufen
 }
 
-function checkLoadMore() {
-  const btn = document.getElementById("loadMoreBtn"); // Wir holen uns den "Load More"-Button aus dem HTML.
-                                                    // Über diesen Button lädt der User weitere Pokémon nach.
-                                                    // Ohne diese Referenz könnten wir den Button // weder anzeigen noch verstecken.
+function checkLoadMore() {                                        // Prüft, ob der "Load More"-Button
+                                                                  // angezeigt oder versteckt werden soll
+  
+ const btn = document.getElementById("loadMoreBtn");              // Wir holen uns den "Load More"-Button aus dem HTML.
+                                                                  // Über diesen Button lädt der User weitere Pokémon nach.
+                                                                  // Ohne diese Referenz könnten wir den Button // weder anzeigen noch verstecken.
 
-  if (isSearching) {  
-    btn.style.display = "none"; // Wenn gesucht wird,
-                                // verstecken wir den Button komplett. 
+  if (isSearching) {
+    btn.style.display = "none";                                   // Wenn gesucht wird,
+                                                                  // verstecken wir den Button komplett.
 
-    return; // Wir beenden hier die Funktion sofort.
+    return;                                                        // Wir beenden hier die Funktion sofort.
   }
 
-  if (startIndex + 25 >= allPokemon.length) { // Jetzt prüfen wir, ob wir bereits am Ende der Pokémon-Liste angekommen sind.
+  if (startIndex + 25 >= allPokemon.length) {                      // Jetzt prüfen wir, ob wir bereits am Ende der Pokémon-Liste angekommen sind.
+   
 
-    btn.style.display = "none";// Wenn wir am Ende sind, gibt es nichts mehr zu laden. Deshalb verstecken wir den Button.
+    btn.style.display = "none";                                    // Wenn wir am Ende sind, gibt es nichts mehr zu laden. Deshalb verstecken wir den Button.
   } else {
-    btn.style.display = "block";// Wenn wir NICHT am Ende sind, Es gibt noch weitere Pokémon Der User kann weiterladen Deshalb zeigen wir den Button an.
+    btn.style.display = "block";                                   // Wenn wir NICHT am Ende sind, Es gibt noch weitere Pokémon Der User kann weiterladen Deshalb zeigen wir den Button an.
   }
+}
+
+function openDialogWindow(content) {
+  content.innerHTML = "Loading...";                                 // Zeigt zunächst "Loading..." im Dialog an
+
+  lastScrollPosition = window.scrollY;                              // Speichert aktuelle Scrollposition
+  dialog.showModal();                                               // Öffnet das Dialog-Fenster
+
+  document.body.style.overflow = "hidden";                          // Verhindert Scrollen im Hintergrund
+}
+
+async function getDialogData(url) {                                 // Diese Funktion lädt die Detaildaten eines Pokémon
+                                                                    // für das Dialog-Fenster.
+                                                                    // Sie nutzt einen Cache, damit bereits geladene Daten
+                                                                    // nicht erneut aus dem Internet geladen werden müssen.
+
+  if (pokemonDetailsCache[url]) {                                   // Prüft zuerst, ob für diese URL bereits Daten
+                                                                    // im Cache gespeichert wurden
+
+    return pokemonDetailsCache[url];                                // Wenn ja:
+                                                                    // → sofort die gespeicherten Daten zurückgeben
+                                                                    // → kein neuer API-Aufruf notwendig
+                                                                    // → spart Zeit und Internet
+  }
+
+  const res = await fetch(url);                                     // Falls die Daten noch NICHT im Cache sind:
+                                                                    // Neue Anfrage an die PokéAPI senden
+
+  const data = await res.json();                                    // Die Antwort der API (Text) in ein JavaScript-Objekt umwandeln
+
+  pokemonDetailsCache[url] = data;                                  // Die geladenen Daten im Cache speichern
+                                                                    // Der Schlüssel ist die URL
+                                                                    // Der Wert sind die Pokémon-Daten
+
+  return data;                                                      // Die geladenen Daten an die aufrufende Funktion zurückgeben
+}
+
+function setDialogStyle(data) { 
+  dialog.classList.remove(...dialog.classList);                     // Entfernt alle bisherigen CSS-Klassen vom Dialog,
+                                                                    // damit keine alten Typ-Farben übrig bleiben
+
+
+  const mainType = data.types[0].type.name;                         // Holt den Haupt-Typ des Pokémon (z.B. fire, water)
+
+  dialog.classList.add("type-" + mainType);                         // Fügt eine neue Klasse hinzu:
+                                                                    // z.B. "type-fire"
+}
+
+async function loadSpeciesData(url) {
+
+  const res = await fetch(url);                                       // Sendet Anfrage an Species-API
+  return await res.json();                                            // Antwort in JSON umwandeln
 }
 
 async function openDialog(url) {
-  currentPokemonIndex = allPokemon.findIndex((p) => p.url === url); // Wir suchen den Index des angeklickten Pokémon
-                                                                    // in der gesamten Pokémon-Liste.
-                                                                    // Das brauchen wir später für:
-                                                                    // → Vor / Zurück Navigation im Dialog
 
-  const dialog = document.getElementById("pokemonDialog"); // Wir holen uns das Dialog-Fenster aus dem HTML
-  const content = document.getElementById("dialogContent"); // Hier kommt später der Inhalt des Dialogs rein
+  currentPokemonIndex = allPokemon.findIndex(p => p.url === url);     // Sucht die Position des Pokémon in der Liste
+                                                                      // → wird für Navigation benutzt
 
-  if (!dialog) { // Falls der Dialog im HTML nicht existiert, // brechen wir ab, damit kein Fehler entsteht.
-    console.error("Dialog not found!");
-    return;
-  }
+  const content = document.getElementById("dialogContent");           // Holt den Dialog-Inhalt-Container
 
-  content.innerHTML = "Loading..."; // Ladeanzeige
+  if (!dialog) return console.error("Dialog not found!");             // Falls Dialog fehlt → Fehler anzeigen
 
-  lastScrollPosition = window.scrollY; // Wir merken uns die aktuelle Scroll-Position der Seite,damit wir später wieder genau dorthin zurückspringen können.
-  dialog.showModal(); // Dialog öffnen
+  openDialogWindow(content);                                          // Öffnet Dialog + zeigt Ladeanzeige
 
-  document.body.style.overflow = "hidden"; // Wir deaktivieren das Scrollen im Hintergrund, damit der User nur den Dialog benutzt.
+  const data = await getDialogData(url);                              // Lädt Pokémon-Daten
 
-  let data; // Variable für Pokémon-Daten
+  const speciesData = await loadSpeciesData(data.species.url);        // Lädt Zusatzinfos (Beschreibung usw.)
 
-  if (pokemonDetailsCache[url]) { // Prüfen, ob wir diese Pokémon-Daten schon gespeichert haben
-    data = pokemonDetailsCache[url]; // Wenn ja → aus dem Cache holen (schneller)
-  } else {
-    const res = await fetch(url); // Wenn nein → aus der API laden
-    data = await res.json();
-    pokemonDetailsCache[url] = data; // Für später speichern
-  }
+  setDialogStyle(data);                                               // Setzt das Farb-Design
 
-  dialog.classList.remove(...dialog.classList); // Alle alten CSS-Klassen vom Dialog entfernen, damit keine falschen Farben übrig bleiben.
-  const mainType = data.types[0].type.name; // Wir holen den Haupt-Typ des Pokémon
-  dialog.classList.add("type-" + mainType); // Wir setzen eine CSS-Klasse basierend auf dem Typ, damit der Dialog farbig angepasst wird.
+  content.innerHTML = createPokemonDialog(                            // Baut den Dialog-Inhalt zusammen und holt die daten aus Templates.js
+    data,
+    speciesData,
+    createStatsTemplate(data.stats)
+  );
 
-  const typeBadges = data.types // Wir erstellen kleine Typ-Badges (HTML)
-    .map((t) => `<span class="type">${t.type.name}</span>`)
-    .join("");
-
-// Zusätzliche Infos (Species) von einer anderen API laden
-  const speciesRes = await fetch(data.species.url); 
-  const speciesData = await speciesRes.json();
-
-  const height = data.height / 10; // Größe in Meter umrechnen
-  const weight = data.weight / 10; // Gewicht in Kilogramm umrechnen
-
-  // Fähigkeiten auslesen und als Text zusammenfügen
-  const abilities = data.abilities 
-    .map((a) => a.ability.name)
-    .join(", ");
-
-  const species = speciesData.name; // Art-Name holen
-
-  const eggGroups = speciesData.egg_groups.map((e) => e.name).join(", "); // Ei-Gruppen holen und zusammenfügen
-
-  const eggCycle = speciesData.hatch_counter; // Brut-Zyklus (Hatch Counter)
-
-  let gender = "Unknown"; // Geschlecht vorbereiten
-
-
-  // Wenn gender_rate = -1 → kein Geschlecht
-  if (speciesData.gender_rate === -1) {
-    gender = "Genderless";
-  } else {
-    gender = "Male / Female";
-  }
-
-  const img = data.sprites.other["official-artwork"].front_default; // Offizielles Pokémon-Bild holen
-
-const statsHtml = createStatsTemplate(data.stats); // Stats-HTML erzeugen (Balken usw.)
-
-content.innerHTML = createPokemonDialog( // Jetzt bauen wir den kompletten Dialog-Inhalt und setzen ihn ins HTML ein
-  data,
-  speciesData,
-  statsHtml
-);
+  updateDialogNav();                                                      // Aktualisiert Pfeil-Buttons
 }
-function showPrevPokemon() { // Diese Funktion zeigt das vorherige Pokémon im Dialog an
-  if (currentPokemonIndex > 0) { // Prüfen: Gibt es ein Pokémon davor?
-    currentPokemonIndex--; // Einen Schritt zurück in der Liste gehen
-    openDialog(allPokemon[currentPokemonIndex].url); // Dialog mit dem vorherigen Pokémon neu öffnen
+
+function showPrevPokemon() {                                              // Diese Funktion zeigt das vorherige Pokémon im Dialog an
+  
+  if (currentPokemonIndex > 0) {                                          // Prüfen: Gibt es ein Pokémon davor?
+    
+    currentPokemonIndex--;                                                // Einen Schritt zurück in der Liste gehen
+    openDialog(allPokemon[currentPokemonIndex].url);                      // Dialog mit dem vorherigen Pokémon neu öffnen
   }
-    // Wenn wir beim ersten Pokémon sind (Index 0),
-    // passiert nichts → kein Fehler
+                                                                          // Wenn wir beim ersten Pokémon sind (Index 0),
+                                                                          // passiert nichts → kein Fehler
 }
 
 function showNextPokemon() {
-  if (currentPokemonIndex < allPokemon.length - 1) { // Prüfen: Gibt es noch ein Pokémon nach dem aktuellen?
-    currentPokemonIndex++; // Einen Schritt nach vorne in der Liste gehen
-    openDialog(allPokemon[currentPokemonIndex].url); // Dialog mit dem nächsten Pokémon neu öffnen
+  if (currentPokemonIndex < allPokemon.length - 1) {                        // Prüfen: Gibt es noch ein Pokémon nach dem aktuellen?
+    
+    currentPokemonIndex++;                                                  // Einen Schritt nach vorne in der Liste gehen
+    openDialog(allPokemon[currentPokemonIndex].url);                        // Dialog mit dem nächsten Pokémon neu öffnen
   }
-  // Wenn wir beim letzten Pokémon sind,
-  // passiert nichts → kein Fehler
+                                                                            // Wenn wir beim letzten Pokémon sind,
+                                                                            // passiert nichts → kein Fehler
 }
 
-function closeDialog() { //Dialog schließ funktion 
-
-  document.body.style.overflow = "auto";  // Scrollen auf der Hauptseite wieder erlauben
+function closeDialog() {                                                    // Dialog schließ funktion
   
-  document.getElementById("pokemonDialog").close();// Dialog-Fenster schließen
 
-  window.scrollTo(0, lastScrollPosition);  // Zur alten Scroll-Position zurückspringen
+  document.body.style.overflow = "auto";                                    // Scrollen auf der Hauptseite wieder erlauben
+
+  document.getElementById("pokemonDialog").close();                         // Dialog-Fenster schließen
+
+  window.scrollTo(0, lastScrollPosition);                                    // Zur alten Scroll-Position zurückspringen
 }
 
-const dialog = document.getElementById("pokemonDialog"); // Dialog-Element aus dem HTML holen
+const dialog = document.getElementById("pokemonDialog");                     // Dialog-Element aus dem HTML holen
 
-// Klick-Event für den Dialog
-dialog.addEventListener("click", (event) => {
-  if (event.target === dialog) {// Prüfen: Wurde auf den Hintergrund geklickt (nicht auf den Inhalt)?
-    closeDialog(); // Dann Dialog schließen
+
+dialog.addEventListener("click", (event) => {                                // Klick-Event für den Dialog
+  if (event.target === dialog) {                                             // Prüfen: Wurde auf den Hintergrund geklickt (nicht auf den Inhalt)?
+    
+    closeDialog();                                                           // Dann Dialog schließen
   }
 });
 
-document.addEventListener("keydown", (event) => { // Tastatur-Steuerung (Keyboard Controls)
-  const dialog = document.getElementById("pokemonDialog"); // Dialog erneut holen
+document.addEventListener("keydown", (event) => {                             // Tastatur-Steuerung (Keyboard Controls)
+  
+  const dialog = document.getElementById("pokemonDialog");                    // Dialog erneut holen
 
-  // Nur reagieren, wenn der Dialog offen ist
-  if (!dialog.open) return;
+  
+  if (!dialog.open) return;                                                   // Nur reagieren, wenn der Dialog offen ist
 
-  if (event.key === "ArrowLeft") { // Linke Pfeiltaste → vorheriges Pokémon
+  if (event.key === "ArrowLeft") {                                            // Linke Pfeiltaste → vorheriges Pokémon
     showPrevPokemon();
   }
 
-  if (event.key === "ArrowRight") { // Rechte Pfeiltaste → nächstes Pokémon
+  if (event.key === "ArrowRight") {                                           // Rechte Pfeiltaste → nächstes Pokémon
     showNextPokemon();
   }
 
-  if (event.key === "Escape") { // Escape-Taste → Dialog schließen
+  if (event.key === "Escape") {                                               // Escape-Taste → Dialog schließen
     closeDialog();
   }
 });
 
-function showAbout() { // Diese Funktion zeigt den "About"-Tab an
+function showAbout() {                                                        // Diese Funktion zeigt den "About"-Tab an
+  
 
-  document.getElementById("aboutTab").classList.remove("hidden"); // About-Bereich sichtbar machen
-  document.getElementById("statsTab").classList.add("hidden"); // Stats-Bereich verstecken
+  document.getElementById("aboutTab").classList.remove("hidden");             // About-Bereich sichtbar machen
+  document.getElementById("statsTab").classList.add("hidden");                // Stats-Bereich verstecken
 
-  setActiveTab(0); // About-Button als aktiv markieren
+  setActiveTab(0);                                                            // About-Button als aktiv markieren
 }
 
-function showStats() { // Diese Funktion zeigt den "Stats"-Tab an
+function showStats() {                                                        // Diese Funktion zeigt den "Stats"-Tab an
 
-  document.getElementById("aboutTab").classList.add("hidden"); // About-Bereich verstecken
-  document.getElementById("statsTab").classList.remove("hidden"); // Stats-Bereich sichtbar machen
+  document.getElementById("aboutTab").classList.add("hidden");                // About-Bereich verstecken
+  document.getElementById("statsTab").classList.remove("hidden");             // Stats-Bereich sichtbar machen
 
-  setActiveTab(1); // Stats-Button als aktiv markieren
-} 
+  setActiveTab(1);                                                            // Stats-Button als aktiv markieren
+}
 
-function setActiveTab(index) {  // Diese Funktion markiert den aktiven Tab-Button
+function setActiveTab(index) {                                                // Diese Funktion markiert den aktiven Tab-Button
 
-  const buttons = document.querySelectorAll(".tab-btn"); // Alle Tab-Buttons aus dem HTML holen
+  const buttons = document.querySelectorAll(".tab-btn");                      // Alle Tab-Buttons aus dem HTML holen
 
-  buttons.forEach((btn, i) => { // Durch alle Buttons gehen
-
-    btn.classList.toggle("active", i === index);
-    // classList.toggle("active", ...)
-    // bedeutet:
-    // Wenn die Bedingung true ist → Klasse hinzufügen
-    // Wenn die Bedingung false ist → Klasse entfernen
-    // i === index prüft:
-    // Ist dieser Button der aktive?
+  buttons.forEach((btn, i) => {                                               // Durch alle Buttons gehen
+    
+  btn.classList.toggle("active", i === index);                                // classList.toggle("active", ...)
+                                                                              // bedeutet:
+                                                                              // Wenn die Bedingung true ist → Klasse hinzufügen
+                                                                              // Wenn die Bedingung false ist → Klasse entfernen
+                                                                              // i === index prüft:
+                                                                              // Ist dieser Button der aktive?
+  
   });
 }
 
-function resetSearch() {    // Diese Funktion setzt die Suche komplett zurück und zeigt wieder alle Pokémon an
+function resetSearch() {                                                        // Diese Funktion setzt die Suche komplett zurück und zeigt wieder alle Pokémon an
+     
 
+  const input = document.getElementById("pokemonName");                        // Suchfeld aus dem HTML holen
 
-  const input = document.getElementById("pokemonName"); // Suchfeld aus dem HTML holen
+  const noResult = document.getElementById("noResultText");                    // "Kein Ergebnis"-Text holen
 
-  const noResult = document.getElementById("noResultText"); // "Kein Ergebnis"-Text holen
+  input.value = "";                                                            // Suchfeld leeren
+  noResult.classList.add("hidden");                                            // Fehlermeldung verstecken
 
-  input.value = ""; // Suchfeld leeren
-  noResult.classList.add("hidden"); // Fehlermeldung verstecken
+  isSearching = false;                                                         // Suchmodus deaktivieren
+  startIndex = 0;                                                              // Liste wieder beim Anfang starten
 
-  isSearching = false; // Suchmodus deaktivieren
-  startIndex = 0; // Liste wieder beim Anfang starten
+  renderPokemon({ results: allPokemon });                                      // Alle Pokémon neu anzeigen
+  checkLoadMore();                                                             // Load-More-Button prüfen
+  updateBackButton();                                                          // Back-Button aktualisieren
 
-  renderPokemon({ results: allPokemon }); // Alle Pokémon neu anzeigen
-  checkLoadMore(); // Load-More-Button prüfen
-  updateBackButton(); // Back-Button aktualisieren
+  window.scrollTo({ top: 0, behavior: "smooth" });                             // Seite sanft nach oben scrollen
+}
 
-  window.scrollTo({ top: 0, behavior: "smooth" }); // Seite sanft nach oben scrollen
-} 
+function updateBackButton() {                                                   // Diese Funktion steuert, ob der "Zurück zur Liste"-Button sichtbar ist
 
-function updateBackButton() { // Diese Funktion steuert, ob der "Zurück zur Liste"-Button sichtbar ist
+  const backBtn = document.getElementById("searchBackWrapper");                 // Back-Button aus dem HTML holen
 
-  const backBtn = document.getElementById("searchBackWrapper"); // Back-Button aus dem HTML holen
-
-  if (isSearching) { // Prüfen: Wird gerade gesucht?
-    backBtn.classList.remove("hidden"); // Wenn ja → Button anzeigen
+  if (isSearching) {
+    // Prüfen: Wird gerade gesucht?
+    backBtn.classList.remove("hidden");                                         // Wenn ja → Button anzeigen
   } else {
-    backBtn.classList.add("hidden"); // Wenn nein → Button verstecken
+    backBtn.classList.add("hidden");                                            // Wenn nein → Button verstecken
   }
+}
+
+function updateDialogNav() {
+  const prevBtn = document.getElementById("prevBtn");                           // Holt Vor -Button
+  const nextBtn = document.getElementById("nextBtn");                           // Holt Zurück-Button
+
+  prevBtn.disabled = currentPokemonIndex === 0;                                 // Deaktiviert "Zurück", wenn erstes Pokémon
+  nextBtn.disabled = currentPokemonIndex === allPokemon.length - 1;             // Deaktiviert "Weiter", wenn letztes Pokémon
 }
