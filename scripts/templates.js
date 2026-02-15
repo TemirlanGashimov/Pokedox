@@ -143,8 +143,8 @@ function createPokemonDialog(data, speciesData, statsHtml) { // Diese Funktion e
 
 
 <div class="dialog-nav">
-  <button onclick="showPrevPokemon()">❮</button>
-  <button onclick="showNextPokemon()">❯</button>
+  <button id="prevBtn" onclick="showPrevPokemon()">❮</button>
+  <button id="nextBtn" onclick="showNextPokemon()">❯</button>
 </div>
 
 `;
